@@ -1,7 +1,7 @@
-let squares = document.getElementsByClassName("square");
+let squares = [].slice.call(document.getElementsByClassName("square"))
 let p1Wins = document.getElementById("playerOneWins");
 let p2Wins = document.getElementById("playerTwoWins");
-
+let vsComp = window.confirm("Are you playing alone or with a friend?")
 class Player {
     constructor(sign, isGoing) {
       this.sign = sign;
@@ -17,6 +17,23 @@ class Player {
         this.sign=== "X"? e.setAttribute("style", "color: red;"): e.setAttribute("style", "color: blue;")
         return e;
       };
+  }
+
+  class Computer extends Player {
+      constructor(sign, isGoing,remainingSquares){
+          super()
+          this.sign = sign;
+          this.isGoing = isGoing;
+          this.tiles = [];
+          this.wins = 0;
+          this.lastWon = false
+          this.remainingSquares = remainingSquares
+      }
+
+      makeMove = (remainingSquares) => {
+        const e = remainingSquares[Math.ceil(Math.random()* remainingSquares.length - 1)]
+        return e
+      }
   }
   
   class Board {
@@ -43,6 +60,9 @@ class Player {
           }
           playerOne.tiles = [];
           playerTwo.tiles = [];
+          if(vsComp){
+              playerTwo.remainingSquares = squares
+          }
           return this.squares
       }
   }
@@ -56,15 +76,32 @@ class Player {
       }
 
         spotThingy = (e) => {
+
+            let currentPlayer;
+            
             if (e.getAttribute("aria-busy") === "true") {
               return;
             }
-            let currentPlayer;
             playerOne.isGoing ? (currentPlayer = playerOne) : (currentPlayer = playerTwo);
             playerOne.isGoing = !playerOne.isGoing;
             playerTwo.isGoing = !playerTwo.isGoing;
             currentPlayer.tiles.push(parseInt(e.dataset.tile));
-            
+            if(vsComp){
+                currentPlayer.claimSpot(e);
+                if(game.checkWinner(currentPlayer, this.board.squares, this.board.p1Wins, this.board.p2Wins)){
+                    playerOne.isGoing = !playerOne.isGoing;
+                    playerTwo.isGoing = !playerTwo.isGoing;
+                    return
+                }
+                playerTwo.remainingSquares = playerTwo.remainingSquares.filter((square) => {return square.dataset.tile !== e.dataset.tile});
+                playerOne.isGoing ? (currentPlayer = playerOne) : (currentPlayer = playerTwo);
+                playerOne.isGoing = !playerOne.isGoing;
+                playerTwo.isGoing = !playerTwo.isGoing;
+                e = playerTwo.makeMove(playerTwo.remainingSquares);
+                playerTwo.remainingSquares = playerTwo.remainingSquares.filter((square) => {return square.dataset.tile !== e.dataset.tile});
+                currentPlayer.tiles.push(parseInt(e.dataset.tile));
+                return currentPlayer.claimSpot(e) && game.checkWinner(currentPlayer, this.board.squares, this.board.p1Wins, this.board.p2Wins);
+            }
             return currentPlayer.claimSpot(e) && game.checkWinner(currentPlayer, this.board.squares, this.board.p1Wins, this.board.p2Wins);
           }
 
@@ -89,6 +126,7 @@ class Player {
                   p1Wins.innerHTML = `${playerOne.wins}`
                   p2Wins.innerHTML = `${playerTwo.wins}`
                   window.alert(`${sign} Wins!! Please Reset!`)
+                  return true
               }
             }
           }
@@ -110,8 +148,17 @@ class Player {
 
 let playerOne = new Player("X", true);
 
-let playerTwo = new Player("O", false);
+let playerTwo = vsComp? new Computer("O", false, [].slice.call(squares)): new Player("O", false);
 
 let board = new Board(squares, p1Wins, p2Wins);
 
 let game = new Game(board, playerOne, playerTwo);
+
+
+// if(vsComp){
+//     e = playerTwo.makeMove(playerTwo.remainingSquares)
+//     playerOne.isGoing = !playerOne.isGoing;
+//     playerTwo.isGoing = !playerTwo.isGoing;
+//     currentPlayer.tiles.push(parseInt(e.dataset.tile));
+//     return currentPlayer.claimSpot(e) && game.checkWinner(currentPlayer, this.board.squares, this.board.p1Wins, this.board.p2Wins);
+// }
