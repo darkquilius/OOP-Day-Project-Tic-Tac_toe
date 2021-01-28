@@ -137,8 +137,11 @@ class Game {
       // UPDATES COMPUTER CLAIMED TILES TO COMPARE TO WIN COMBOS
       currentPlayer.tiles.push(parseInt(e.dataset.tile));
       //CLAIMS COMPUTER SPOT ON BOARD AND SEE IF COMPUTER WON
+      function claim(e){
+        currentPlayer.claimSpot(e)
+      }
+      setTimeout(claim, 2000, e)
       return (
-        currentPlayer.claimSpot(e) &&
         game.checkWinner(
           currentPlayer,
           this.board.squares,
