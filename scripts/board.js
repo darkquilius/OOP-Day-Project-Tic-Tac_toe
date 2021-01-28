@@ -2,6 +2,7 @@ let squares = [].slice.call(document.getElementsByClassName("square"));
 let p1Wins = document.getElementById("playerOneWins");
 let p2Wins = document.getElementById("playerTwoWins");
 let vsComp = window.confirm("Press ok to play vs computer... Press cancel for PvP...");
+
 class Player {
   constructor(sign, isGoing) {
     this.sign = sign;
