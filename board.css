@@ -1,0 +1,26 @@
+h1 {
+    font-size: 75px;
+}
+
+button {
+    margin-bottom: 25px;
+    background-color: rgb(2, 241, 94);
+}
+
+.container-fluid{
+    margin-top: 150px;
+}
+
+.square {
+    padding: 50px;
+    border: 5px solid black;
+    height: 200px;
+}
+
+.playerInfo {
+    text-align: center;
+}
+
+.board {
+    text-align: center;
+}
